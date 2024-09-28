@@ -30,8 +30,8 @@ class ViewController: UIViewController {
                 points += 50
             }
             if round == 5 {
-                let alert = UIAlertController(title: "Result", message: "Your score: \(points)", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                let alert = UIAlertController(title: "Результат", message: "Твои очки: \(points)", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "Отлично!", style: .default, handler: nil))
                 present(alert, animated: true, completion: nil)
                 round = 1
                 points = 0
