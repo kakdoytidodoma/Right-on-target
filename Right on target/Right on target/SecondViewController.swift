@@ -9,9 +9,6 @@ import UIKit
 
 class SecondViewController: UIViewController {
     
-    @IBAction func hideCurentScene(){
-        dismiss(animated: true, completion: nil)
-    }
     
 
     override func viewDidLoad() {

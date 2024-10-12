@@ -8,68 +8,66 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    var Game: game!
+    
     @IBOutlet var slider: UISlider!
     @IBOutlet var label: UILabel!
     
-    var number = 0
-    var round = 1
-    var points = 0
+
+//    lazy var secondViewController: SecondViewController = getSecondViewController()
+//    
+//    private func getSecondViewController() -> SecondViewController {
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//        return storyboard.instantiateViewController(withIdentifier: "SecondViewController") as! SecondViewController
+//    }
     
-    lazy var secondViewController: SecondViewController = getSecondViewController()
-    
-    private func getSecondViewController() -> SecondViewController {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        return storyboard.instantiateViewController(withIdentifier: "SecondViewController") as! SecondViewController
+//POMARK - Обновление View
+    private func updateLabelWithSecretNumber(newText: String){
+        label.text = newText
+    }
+    private func showAlertWith(score: Int){
+        let alert = UIAlertController(
+            title: "Игра Окончена",
+            message: "Вы заработали \(score) очков",
+            preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Начать заново", style: .default, handler: nil))
+        self.present(alert,animated: true, completion: nil)
     }
     
-    
-    
-    @IBAction func showNextScreen() {
-        present(secondViewController, animated: true , completion: nil)
-    }
-    
-    @IBAction func checkNumber() {
-       
-            let numSlider = Int(slider.value.rounded())
-            if numSlider > number {
-                points += 50 - numSlider + number
-            } else if numSlider < number {
-                points += 50 - number + numSlider
-            } else {
-                points += 50
-            }
-            if round == 5 {
-                let alert = UIAlertController(title: "Результат", message: "Твои очки: \(points)", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "Отлично!", style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
-                round = 1
-                points = 0
-            } else {
-                round += 1
-            }
-            number = Int.random(in: 1...50)
-            label.text = String(number)
-    }
-    
-    
+//POMARK: Жизненный цикл
     
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print (viewDidLoad)
-        number = Int.random(in: 1...50)
-        label.text = String(number)
-        
+        Game = game(startValue: 1, endValue: 50, rounds: 5)
+        updateLabelWithSecretNumber(newText: String(Game.currentSecretValue))
     }
+
+    
+    
+    
+    @IBAction func checkNumber() {
+       
+        Game.calculateScore(with: Int(slider.value))
+        if Game.isGameEnded {
+            showAlertWith(score: Game.score)
+            Game.restartGame()
+        } else {
+            Game.startNewRound()
+        }
+        updateLabelWithSecretNumber(newText: String(Game.currentSecretValue))
+    }
+    
+    
+    
+    
+    
     
     override func loadView () {
         super.loadView()
         print("loadView")
-        let versionLabel = UILabel(frame: CGRect(x: 20, y: 10, width: 200, height: 20))
-        versionLabel.text = "Version: 1.1"
-        view.addSubview(versionLabel)
-        
     }
     
     override func viewWillAppear(_ animated: Bool) {
