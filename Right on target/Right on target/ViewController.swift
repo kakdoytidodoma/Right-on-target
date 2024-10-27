@@ -1,93 +1,60 @@
-//
-//  ViewController.swift
-//  Right on target
-//
-//  Created by Egor Panin on 27.09.2024.
-//
-
 import UIKit
 
 class ViewController: UIViewController {
     
-    var Game: game!
+    // Сущность "Игра"
+    var game: Game!
     
+    // Элементы на сцене
     @IBOutlet var slider: UISlider!
     @IBOutlet var label: UILabel!
     
+    // MARK: - Жизненный цикл
 
-//    lazy var secondViewController: SecondViewController = getSecondViewController()
-//    
-//    private func getSecondViewController() -> SecondViewController {
-//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-//        return storyboard.instantiateViewController(withIdentifier: "SecondViewController") as! SecondViewController
-//    }
-    
-//POMARK - Обновление View
-    private func updateLabelWithSecretNumber(newText: String){
-        label.text = newText
-    }
-    private func showAlertWith(score: Int){
-        let alert = UIAlertController(
-            title: "Игра Окончена",
-            message: "Вы заработали \(score) очков",
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "Начать заново", style: .default, handler: nil))
-        self.present(alert,animated: true, completion: nil)
-    }
-    
-//POMARK: Жизненный цикл
-    
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        Game = game(startValue: 1, endValue: 50, rounds: 5)
-        updateLabelWithSecretNumber(newText: String(Game.currentSecretValue))
+        // Создаем генератор случайных чисел
+        let generator = NumberGenerator(startValue: 1, endValue: 50)!
+        // Создаем сущность игра
+        game = Game(valueGenerator: generator, rounds: 5)
+        // Обновляем данные о текущем значении загаданного числа
+        updateLabelWithSecretNumber(newText: String(game.currentRound.currentSecretValue))
     }
-
     
+    // MARK: - Взаимодействие View - Model
     
-    
+    // Проверка выбранного пользователем числа
     @IBAction func checkNumber() {
-       
-        Game.calculateScore(with: Int(slider.value))
-        if Game.isGameEnded {
-            showAlertWith(score: Game.score)
-            Game.restartGame()
+        // Высчитываем очки за раунд
+        game.currentRound.calculateScore(with: Int(slider.value))
+        // Проверяем, окончена ли игра
+        if game.isGameEnded {
+            // Показываем окно с итогами
+            showAlertWith(score: game.score)
+            // Рестартуем игру
+            game.restartGame()
         } else {
-            Game.startNewRound()
+            // Начинаем новый раунд игры
+            game.startNewRound()
         }
-        updateLabelWithSecretNumber(newText: String(Game.currentSecretValue))
+        // Обновляем данные о текущем значении загаданного числа
+        updateLabelWithSecretNumber(newText: String(game.currentRound.currentSecretValue))
     }
     
+    // MARK: - Обновление View
     
-    
-    
-    
-    
-    override func loadView () {
-        super.loadView()
-        print("loadView")
+    // Обновление текста загаданного числа
+    func updateLabelWithSecretNumber(newText: String ) {
+        label.text = newText
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        print("viewWillAppear")
+    // Отображение всплывающего окна со счетом
+    private func showAlertWith( score: Int ) {
+        let alert = UIAlertController(
+                        title: "Игра окончена",
+                        message: "Вы заработали \(score) очков",
+                        preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Начать заново", style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        print("viewDidAppear")
-    }
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        print("viewWillDisappear")
-    }
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        print("viewDidDisappear")
-    }
-
-
 }
-
